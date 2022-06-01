@@ -70,16 +70,16 @@
 
       function playGame() {
         if (player.inPlay == true) {
-          if (keys.ArrowDown) {
+          if (keys.ArrowDown && boundBasket.y > 0) {
             boundBasket.y += player.speed;
           }
-          if (keys.ArrowUp) {
+          if (keys.ArrowUp && boundBasket.y > 0) {
             boundBasket.y -= player.speed;
           }
-          if (keys.ArrowLeft) {
+          if (keys.ArrowLeft && boundBasket.x > 0) {
             boundBasket.x -= player.speed;
           }
-          if (keys.ArrowRight) {
+          if (keys.ArrowRight && boundBasket.x > 0) {
             boundBasket.x += player.speed;
           }
 
@@ -88,7 +88,8 @@
           basket.style.top = boundBasket.y + 'px';
 
           requestAnimationFrame(playGame); // call function from itself to keep in loop animation
-          console.log(boundBasket.y);
+          console.log('y', boundBasket.y);
+          console.log('x', boundBasket.x);
         }
       }
 
