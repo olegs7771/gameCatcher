@@ -23,7 +23,9 @@
       const badLeft = document.querySelector('.badLeft');
       const btn = document.querySelector('.btn');
       const basket = document.querySelector('.basket');
+      const container = document.querySelector('.container');
       let boundBasket = basket.getBoundingClientRect();
+      let boundContainer = container.getBoundingClientRect();
 
       let keys = {
         ArrowUp: false,
@@ -53,7 +55,7 @@
         score: 0,
         totalBad: 0,
         inPlay: false, //when to stop/start the game
-        speed: 5,
+        speed: 15,
       };
 
       function startGame() {
@@ -70,7 +72,10 @@
 
       function playGame() {
         if (player.inPlay == true) {
-          if (keys.ArrowDown && boundBasket.y > 0) {
+          if (
+            keys.ArrowDown &&
+            boundBasket.y < boundContainer.height - boundBasket.height
+          ) {
             boundBasket.y += player.speed;
           }
           if (keys.ArrowUp && boundBasket.y > 0) {
@@ -79,7 +84,10 @@
           if (keys.ArrowLeft && boundBasket.x > 0) {
             boundBasket.x -= player.speed;
           }
-          if (keys.ArrowRight && boundBasket.x > 0) {
+          if (
+            keys.ArrowRight &&
+            boundBasket.x < boundContainer.width - boundBasket.width
+          ) {
             boundBasket.x += player.speed;
           }
 
@@ -90,6 +98,10 @@
           requestAnimationFrame(playGame); // call function from itself to keep in loop animation
           console.log('y', boundBasket.y);
           console.log('x', boundBasket.x);
+          console.log(
+            'boundContainer.width - boundBasket.width',
+            boundContainer.width - boundBasket.width
+          );
         }
       }
 
