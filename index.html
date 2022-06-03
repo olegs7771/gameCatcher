@@ -55,19 +55,50 @@
         score: 0,
         totalBad: 0,
         inPlay: false, //when to stop/start the game
-        speed: 15,
+        speed: 10,
       };
 
       function startGame() {
         message.style.display = 'none';
         btn.style.display = 'none';
+        basket.style.display = 'block';
         player.score = 0;
         player.totalBad = 10; // starting number
         player.inPlay = true;
         scoreupdate(); // update any time game starts
         // Create Bad Guys
+        setupBadGuys(6);
         // Launch Animation
         requestAnimationFrame(playGame);
+      }
+
+      function setupBadGuys(num) {
+        for (let i = 0; i < num; i++) {
+          makeBad();
+        }
+      }
+
+      function makeBad() {
+        if (player.totalBad > 0) {
+          let temp = player.totalBad;
+          player.totalBad--;
+          scoreupdate();
+          let div = document.createElement('div');
+          div.innerHTML = '#' + temp;
+          let ran = Math.floor(Math.random() * 50) + 50;
+          div.style.height = ran + 'px';
+          div.style.lineHeight = ran + 'px';
+          div.style.backgroundColor =
+            '#' + Math.random().toString(16).substr(-6);
+          div.classList.add('baddy');
+          div.x = Math.floor(Math.random() * boundContainer.width - 100);
+          if (div.x < 0) div.x = 100;
+          div.y = Math.floor(Math.random() * 500) * -1 - 200;
+          div.speed = Math.ceil(Math.random() * 2) + 2;
+          container.appendChild(div);
+          div.style.left = div.x + 'px';
+          div.style.top = div.y + 'px';
+        }
       }
 
       function playGame() {
@@ -96,13 +127,55 @@
           basket.style.top = boundBasket.y + 'px';
 
           requestAnimationFrame(playGame); // call function from itself to keep in loop animation
-          console.log('y', boundBasket.y);
-          console.log('x', boundBasket.x);
-          console.log(
-            'boundContainer.width - boundBasket.width',
-            boundContainer.width - boundBasket.width
-          );
+
+          let tempEnemy = document.querySelectorAll('.baddy');
+          if (tempEnemy.length == 0) {
+            // End Game
+            endGame();
+          } else {
+            for (let i = 0; i < tempEnemy.length; i++) {
+              bgMover(tempEnemy[i]);
+              console.log('tempEnemy[i].speed', tempEnemy[i].speed);
+            }
+          }
+          // console.log(tempEnemy);
         }
+      }
+
+      function endGame() {
+        message.style.display = 'block';
+        message.textContent = 'Game Over';
+        btn.style.display = 'block';
+        player.inPlay = false;
+        basket.style.display = 'none';
+      }
+
+      function bgMover(elem) {
+        // console.log('elem', elem);
+        elem.y += elem.speed;
+        if (elem.y > boundContainer.height) {
+          elem.y = -100;
+        }
+        //Check if falling objects collide with a basket
+        if (isCollide(basket, elem)) {
+          player.score++;
+          console.log('Hit!');
+          container.removeChild(elem);
+          scoreupdate();
+          makeBad();
+        }
+        elem.style.top = elem.y + 'px';
+      }
+
+      function isCollide(a, b) {
+        let aRect = a.getBoundingClientRect();
+        let bRect = b.getBoundingClientRect();
+        return !(
+          aRect.bottom < bRect.top ||
+          aRect.top > bRect.bottom ||
+          aRect.right < bRect.left ||
+          aRect.left > bRect.right
+        );
       }
 
       function scoreupdate() {
